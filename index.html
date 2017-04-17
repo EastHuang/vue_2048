@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-type" content="text/html" charset="utf-8">
+	<title>vue</title>
+	<script src="vue.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script type="text/template" id="box-template">
+		<div class="box">{{value}}</div>
+	</script>
+</head>
+<body>
+	<div id="app">
+		<div v-for="data in game_data">
+			<box v-for="value in data" :value='value' :class='"c"+value'></box>
+		</div>
+	</div>
+</body>
+<script>
+	"use strict";
+	var template = Vue.component('box',{
+		props:['value'],
+		template:"#box-template"
+	}); 
+
+	var app = new Vue({
+		el:"#app",
+		data:{
+			game_data:[[],[],[],[]],
+			min_data:2,		
+			move:false,			//是否发生移动
+		},
+		methods:{
+			left:function(){
+				for(var i=0;i<this.game_data.length;i++){
+					for(var j=1;j<this.game_data[i].length;j++){
+						var value =this.game_data[i][j];
+						var preValue = null;
+						if(value != null){
+							for(var k = j;k > 0;k--){
+								preValue = this.game_data[i][k-1];
+								if(preValue == null){
+									this.game_data[i].splice(k-1,1,value);
+									this.game_data[i].splice(k,1,null);
+									this.move = true;
+								}else if(preValue == value){
+									this.game_data[i].splice(k-1,1,2*value);
+									this.game_data[i].splice(k,1,null);
+									this.move = true;
+								}else{
+									break;
+								}
+							}
+						}
+					}
+				}
+				this.addData();
+				this.isGameOver();
+			},
+			up:function(){
+				for(var i=1;i<this.game_data.length;i++){
+					for(var j=0;j<this.game_data[i].length;j++){
+						var value = this.game_data[i][j];
+						var preValue = null;
+						if(value != null)
+						{
+							for(var k = i;k>0;k--){
+								preValue = this.game_data[k-1][j];
+								if(preValue == null){
+									this.game_data[k-1].splice(j,1,value);
+									this.game_data[k].splice(j,1,null);
+									this.move = true;
+								}else if(preValue == value){
+									this.game_data[k-1].splice(j,1,2*value);
+									this.game_data[k].splice(j,1,null);
+									this.move = true;
+								}else{
+									break;
+								}
+							}
+						}
+					}
+				}
+				this.addData();
+				this.isGameOver();
+			},
+			right:function(){
+				for(var i=0;i<this.game_data.length;i++){
+					for(var j=this.game_data[i].length-2;j>=0;j--){
+						var value = this.game_data[i][j];
+						var nextValue = null;
+						if(value != null){
+							for(var k=j;k<this.game_data[i].length-1;k++){
+								nextValue = this.game_data[i][k+1];			
+								if(nextValue == null){
+									this.game_data[i].splice(k+1,1,value);
+									this.game_data[i].splice(k,1,null);
+									this.move = true;
+								}else if(nextValue == value){
+									this.game_data[i].splice(k+1,1,2*value);
+									this.game_data[i].splice(k,1,null);
+									this.move = true;
+								}else{
+									break;
+								}
+							}
+						}				
+					}
+				}
+				this.addData();
+				this.isGameOver();
+			},
+			down:function(){
+				for(var i = this.game_data.length - 2;i>=0;i--){
+					for(var j=0;j<this.game_data[i].length;j++){
+						var value = this.game_data[i][j];
+						var nextValue = null;
+						if(value != null){
+							for(var k = i;k<this.game_data.length-1;k++)
+							{
+								var nextValue = this.game_data[k+1][j];
+								if(nextValue == null){
+									this.game_data[k+1].splice(j,1,value);
+									this.game_data[k].splice(j,1,null);
+									this.move = true;
+								}else if(nextValue == value){
+									this.game_data[k+1].splice(j,1,2*value);
+									this.game_data[k].splice(j,1,null);
+									this.move = true;
+								}else{
+									break;
+								}
+							}
+						}					
+					}
+				}
+				this.addData();
+				this.isGameOver();
+			},
+			//产生新的数字
+			addData:function(){
+				var i = parseInt(4*Math.random());
+				var j = parseInt(4*Math.random());
+				if(!this.move){
+					return false;
+				}else if(this.game_data[i][j] == null){
+					this.game_data[i].splice(j,1,this.min_data); 
+					this.move = false; 									//重置移动状态
+				}else{
+					this.addData();
+				}
+			},
+			//判断游戏是否结束
+			isGameOver:function(){
+				for(var i=0;i<this.game_data.length;i++){
+					for(var j=0;j<this.game_data[i].length;j++){
+						if(this.game_data[i][j] == null){
+							return false;
+						}else if(j<this.game_data[i].length - 1 && this.game_data[i][j] == this.game_data[i][j+1]){
+							return false;
+						}else if(i<this.game_data.length - 1 && this.game_data[i][j] == this.game_data[i+1][j]){
+							return false;
+						}
+					}
+				}
+				this.overTips();
+			},
+
+			//显示失败提示及后续逻辑
+			overTips:function(){
+				alert("游戏结束")
+			}
+		},
+		//初始化方格
+		created:function(){
+			var init_x = parseInt(4*Math.random());
+			var init_y = parseInt(4*Math.random()); 
+			for(var i=0;i<4;i++){
+				for(var j=0;j<4;j++){
+						if(init_x != i || init_y != j){
+							this.game_data[i][j] = null;
+						}else{
+							this.game_data[i][j] = this.min_data;
+						}
+					}
+				}
+			}
+	});
+</script>
+<script src="keyup.js"></script>
+</html>

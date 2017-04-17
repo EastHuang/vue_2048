@@ -1,0 +1,14 @@
+*{font-family: cursive;}
+#app{background: #BAAC9F;position: fixed;width: 600px;height: 600px;top:50%;left: 50%;margin-top:-300px;margin-left:-300px;border-radius: 20px;}
+.box{margin:15px;border-radius: 20px;background: #EEE1D5;width: 120px;height: 120px;float: left;font-size: 48px;text-align: center;line-height: 120px;}
+.c2{background: #EEE4DA;}
+.c4{background: #ECDEC7;}
+.c8{background: #F7AF72;}
+.c16{background: #F49360;}
+.c32{background: #E67E5C;}
+.c64{background: #f85c32;}
+.c128{background: #edcf72;}
+.c256{background: #edcc61;}
+.c512{background: #edc850;}
+.c1024{background: #edc53f;}
+.c2048{background: #edc22e;}
